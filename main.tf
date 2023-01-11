@@ -456,6 +456,16 @@ module "firefly_eventbridge_permissions" {
   }
 }
 
+module "firefly_additional_permissions" {
+  source = "./modules/additional_features_permissions"
+  depends_on = [module.firefly_aws_integration,
+    module.config_service_setup]
+  firefly_role_name = module.firefly_aws_integration[0].firefly_integration_role_name
+  config_service_role_arn = module.config_service_setup[0].config_service_role_arn
+  invoke_firefly_event_bus_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
+  use_config_service = var.use_config_service
+}
+
 // create eventbridge rules using workflow for exist integration
 module "run_workflow" {
   count = var.is_event_driven && !var.terraform_create_rules && var.exist_integration ? 1 : 0
@@ -481,7 +491,8 @@ module "event_driven_ap_northeast_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ap_northeast_1
@@ -513,7 +524,8 @@ module "event_driven_ap_northeast_3" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ap_northeast_3
@@ -529,7 +541,8 @@ module "event_driven_ap_south_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ap_south_1
@@ -545,7 +558,8 @@ module "event_driven_ap_southeast_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ap_southeast_1
@@ -561,7 +575,8 @@ module "event_driven_ap_southeast_2" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ap_southeast_2
@@ -577,7 +592,8 @@ module "event_driven_ca_central_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.ca_central_1
@@ -593,7 +609,8 @@ module "event_driven_eu_central_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.eu_central_1
@@ -609,7 +626,8 @@ module "event_driven_eu_north_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.eu_north_1
@@ -625,7 +643,8 @@ module "event_driven_eu_west_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.eu_west_1
@@ -641,7 +660,8 @@ module "event_driven_eu_west_2" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.eu_west_2
@@ -657,7 +677,8 @@ module "event_driven_eu_west_3" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.eu_west_3
@@ -673,7 +694,8 @@ module "event_driven_sa_east_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.sa_east_1
@@ -689,7 +711,8 @@ module "event_driven_us_east_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.us_east_1
@@ -705,7 +728,8 @@ module "event_driven_us_east_2" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.us_east_2
@@ -721,7 +745,8 @@ module "event_driven_us_west_1" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.us_west_1
@@ -737,7 +762,8 @@ module "event_driven_us_west_2" {
   eventbridge_role_arn = module.firefly_eventbridge_permissions[0].eventbridge_rule_role_arn
   depends_on = [
     module.firefly_aws_integration,
-    module.firefly_eventbridge_permissions
+    module.firefly_eventbridge_permissions,
+    module.firefly_additional_permissions
   ]
   providers      = {
     aws = aws.us_west_2
@@ -935,9 +961,15 @@ module "config_service_setup" {
   depends_on = [module.firefly_aws_integration]
   count = var.use_config_service ? 1 : 0
   source = "./modules/config_service_setup"
-  firefly_deny_policy_name = var.firefly_deny_list_policy_name
   providers = {
     aws = aws.us_east_1
   }
   firefly_role_name = var.firefly_role_name
+  firefly_allow_list_policy_arn_part_1 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_1
+  firefly_allow_list_policy_arn_part_2 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_2
+  firefly_allow_list_policy_arn_part_3 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_3
+  firefly_allow_list_policy_arn_part_4 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_4
+  firefly_allow_list_policy_arn_part_5 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_5
+  firefly_allow_list_policy_arn_part_6 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_6
+  firefly_allow_list_policy_arn_part_7 = module.firefly_aws_integration[0].firefly_allow_list__policy_arn_part_7
 }

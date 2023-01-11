@@ -35,6 +35,7 @@ resource "aws_iam_policy" "config_service_management_policy" {
 }
 
 resource "aws_iam_role" "aws_config_role" {
+  depends_on = [aws_iam_policy.config_service_management_policy]
   name                = "aws-config-role-firefly"
   description         = "this role allows the config service a read only permissions to the cloud configuration, and permissions to it's s3 bucket"
   assume_role_policy  = <<POLICY
@@ -53,7 +54,13 @@ resource "aws_iam_role" "aws_config_role" {
 }
 POLICY
   managed_policy_arns = [
-    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/${var.firefly_deny_policy_name}",
+    var.firefly_allow_list_policy_arn_part_1,
+    var.firefly_allow_list_policy_arn_part_2,
+    var.firefly_allow_list_policy_arn_part_3,
+    var.firefly_allow_list_policy_arn_part_4,
+    var.firefly_allow_list_policy_arn_part_5,
+    var.firefly_allow_list_policy_arn_part_6,
+    var.firefly_allow_list_policy_arn_part_7,
     aws_iam_policy.config_service_management_policy.arn,
     "arn:aws:iam::aws:policy/SecurityAudit",
     "arn:aws:iam::aws:policy/ReadOnlyAccess",
@@ -63,42 +70,4 @@ POLICY
 resource "aws_s3_bucket" "config_bucket" {
   bucket        = "aws-config-service-bucket-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
-}
-
-resource "aws_iam_policy" "config_service_firefly_permissions" {
-  name        = "fireflyConfigServicePermissions"
-  path        = "/"
-  description = "this policy allows firefly to create/stop/delete a configuration recorder"
-  policy      = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Action" : [
-          "config:StartConfigurationRecorder",
-          "config:StopConfigurationRecorder",
-          "config:PutDeliveryChannel",
-          "config:PutConfigurationRecorder",
-          "config:DeleteConfigurationRecorder",
-          "config:DeleteDeliveryChannel"
-        ],
-        "Effect" : "Allow",
-        "Resource": "*"
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "iam:PassRole"
-        ],
-        "Resource" : aws_iam_role.aws_config_role.arn
-        "Condition": {
-          "StringEquals": {"iam:PassedToService": "config.amazonaws.com"}
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "firefly_config_service_permissions" {
-  role       = var.firefly_role_name
-  policy_arn = aws_iam_policy.config_service_firefly_permissions.arn
 }

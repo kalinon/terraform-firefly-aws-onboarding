@@ -1,12 +1,11 @@
-
 data "terracurl_request" "firefly_login" {
-  name           = "firefly_aws_integration"
-  url            = "${var.firefly_endpoint}/account/access_keys/login"
-  method         = "POST"
-  headers        = {
-    Content-Type: "application/json",
+  name    = "firefly_aws_integration"
+  url     = "${var.firefly_endpoint}/account/access_keys/login"
+  method  = "POST"
+  headers = {
+    Content-Type : "application/json",
   }
-  request_body = jsonencode({ "accessKey"=var.firefly_access_key,  "secretKey"=var.firefly_secret_key })
+  request_body = jsonencode({ "accessKey" = var.firefly_access_key, "secretKey" = var.firefly_secret_key })
 
 }
 
@@ -20,7 +19,13 @@ output "response_code" {
 
 resource "time_sleep" "wait_10_seconds" {
   depends_on = [
-    aws_iam_policy.firefly_readonly_policy_deny_list, aws_iam_policy.firefly_s3_specific_permission,
+    aws_iam_policy.firefly_readonly_policy_part1,
+    aws_iam_policy.firefly_readonly_policy_part2,
+    aws_iam_policy.firefly_readonly_policy_part3,
+    aws_iam_policy.firefly_readonly_policy_part4,
+    aws_iam_policy.firefly_readonly_policy_part5,
+    aws_iam_policy.firefly_readonly_policy_part6,
+    aws_iam_policy.firefly_readonly_policy_part7,
     aws_iam_role.firefly_cross_account_access_role
   ]
 
@@ -28,33 +33,33 @@ resource "time_sleep" "wait_10_seconds" {
 }
 
 resource "terracurl_request" "firefly_aws_integration_request" {
-  name           = "firefly aws provider integration"
-  url            = "${var.firefly_endpoint}/integrations/aws/"
-  method         = "POST"
-  request_body   = jsonencode(
+  name         = "firefly aws provider integration"
+  url          = "${var.firefly_endpoint}/integrations/aws/"
+  method       = "POST"
+  request_body = jsonencode(
     {
-      "name"= var.name,
-      "roleArn"= aws_iam_role.firefly_cross_account_access_role.arn,
-      "externalId"= var.role_external_id,
-      "fullScanEnabled"= var.full_scan_enabled,
-      "isProd"= var.is_prod
-      "isEventDriven" = var.event_driven
+      "name"               = var.name,
+      "roleArn"            = aws_iam_role.firefly_cross_account_access_role.arn,
+      "externalId"         = var.role_external_id,
+      "fullScanEnabled"    = var.full_scan_enabled,
+      "isProd"             = var.is_prod
+      "isEventDriven"      = var.event_driven
       "eventDrivenRegions" = var.event_driven_regions
-      "shouldRunWorkflow" = !var.terraform_create_rules
+      "shouldRunWorkflow"  = !var.terraform_create_rules
     }
   )
 
   headers = {
     Content-Type = "application/json"
-    Authorization: "Bearer ${jsondecode(data.terracurl_request.firefly_login.response).access_token}"
+    Authorization : "Bearer ${jsondecode(data.terracurl_request.firefly_login.response).access_token}"
   }
 
-   lifecycle {
-      ignore_changes = [
-        headers,
-        destroy_headers,
-        request_body
-      ]
+  lifecycle {
+    ignore_changes = [
+      headers,
+      destroy_headers,
+      request_body
+    ]
   }
   response_codes = [200, 409]
 
@@ -63,10 +68,17 @@ resource "terracurl_request" "firefly_aws_integration_request" {
 
   destroy_headers = {}
 
-  destroy_request_body =  ""
+  destroy_request_body   = ""
   destroy_response_codes = [200]
-   depends_on = [
-    aws_iam_policy.firefly_readonly_policy_deny_list, aws_iam_policy.firefly_s3_specific_permission,
-    aws_iam_role.firefly_cross_account_access_role, time_sleep.wait_10_seconds
+  depends_on             = [
+    aws_iam_policy.firefly_readonly_policy_part1,
+    aws_iam_policy.firefly_readonly_policy_part2,
+    aws_iam_policy.firefly_readonly_policy_part3,
+    aws_iam_policy.firefly_readonly_policy_part4,
+    aws_iam_policy.firefly_readonly_policy_part5,
+    aws_iam_policy.firefly_readonly_policy_part6,
+    aws_iam_policy.firefly_readonly_policy_part7,
+    aws_iam_role.firefly_cross_account_access_role,
+    time_sleep.wait_10_seconds
   ]
 }
