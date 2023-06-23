@@ -49,12 +49,18 @@ variable "firefly_role_name" {
   type    = string
 }
 
+variable "firefly_readonly_policy_name" {
+  type        = string
+  description = "The name for the Firefly allow policy generated"
+  default     = "FireflyReadonlyPolicyAllowList"
+}
+
 variable "firefly_deny_list_policy_name" {
   type        = string
   description = "The name for the Firefly deny policy generated"
   default     = "FireflyReadonlyPolicyDenyList"
 }
- 
+
 variable full_scan_enabled {
   type        = bool
   default     = true

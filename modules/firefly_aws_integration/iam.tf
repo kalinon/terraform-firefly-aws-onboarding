@@ -4,6 +4,26 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
+resource "aws_iam_policy" "firefly_readonly_policy_additional" {
+  name        = var.firefly_readonly_policy_name
+  path        = "/"
+  description = "Additional read only permissions for the cloud configuration"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+          "Action": [
+            "kms:DescribeKey",
+          ],
+          "Effect": "Allow",
+          "Resource": "*"
+        },
+    ]
+  })
+  tags = var.tags
+}
+
 resource "aws_iam_policy" "firefly_readonly_policy_deny_list" {
   name        = var.firefly_deny_list_policy_name
   path        = "/"
@@ -216,6 +236,11 @@ resource "aws_iam_role" "firefly_cross_account_access_role" {
   tags = var.tags
 }
 
+resource "aws_iam_role_policy_attachment" "firefly_readonly_policy_additional" {
+  role       = aws_iam_role.firefly_cross_account_access_role.name
+  policy_arn = aws_iam_policy.firefly_readonly_policy_additional.arn
+}
+
 resource "aws_iam_role_policy_attachment" "firefly_readonly_policy_deny_list" {
   role       = aws_iam_role.firefly_cross_account_access_role.name
   policy_arn = aws_iam_policy.firefly_readonly_policy_deny_list.arn
@@ -235,3 +260,6 @@ resource "aws_iam_role_policy_attachment" "firefly_security_audit" {
   role       = aws_iam_role.firefly_cross_account_access_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
+
+
+

@@ -40,7 +40,7 @@ variable "full_scan_enabled" {
 
 variable "event_driven"{
   type = bool
-  default = false 
+  default = false
   description = "Is event driven infrastructre installed?"
 }
 
@@ -56,6 +56,11 @@ variable "role_external_id" {
 variable "role_name"{
   type        = string
   description = "The name for the Firefly role generated"
+}
+
+variable "firefly_readonly_policy_name"{
+  type        = string
+  description = "The name for the Firefly additional allow policy generated"
 }
 
 variable "firefly_deny_list_policy_name"{

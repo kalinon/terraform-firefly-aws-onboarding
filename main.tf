@@ -1,6 +1,7 @@
 locals {
   firefly_role_name = "${var.resource_prefix}${var.firefly_role_name}"
   firefly_deny_list_policy_name = "${var.resource_prefix}${var.firefly_deny_list_policy_name}"
+  firefly_readonly_policy_name = "${var.resource_prefix}${var.firefly_readonly_policy_name}"
 }
 
 provider "aws" {
@@ -448,6 +449,7 @@ module "firefly_aws_integration" {
   full_scan_enabled = var.full_scan_enabled
   role_external_id = var.role_external_id
   role_name = local.firefly_role_name
+  firefly_readonly_policy_name = local.firefly_readonly_policy_name
   firefly_deny_list_policy_name = local.firefly_deny_list_policy_name
   terraform_create_rules = var.terraform_create_rules
   event_driven_regions = var.event_driven_regions
